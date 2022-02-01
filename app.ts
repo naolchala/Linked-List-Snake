@@ -139,13 +139,26 @@ class LinkedList {
     }
     reverse() {
         let temp = this.head;
-        let next, prev;
+        if (this.head.next == undefined) {
+            return;
+        }
+        let next,
+            prev: SnakeNode = undefined;
 
         while (temp) {
-            prev = temp;
             next = temp.next;
             temp.next = prev;
+            prev = temp;
             temp = next;
+        }
+
+        this.head = prev;
+    }
+    print() {
+        let temp = this.head;
+        while (temp) {
+            console.log(temp.position);
+            temp = temp.next;
         }
     }
 }
@@ -192,16 +205,29 @@ const init = setInterval(() => {
             ll.push();
         }
     }
-}, 50);
+}, 100);
 
 window.addEventListener("keypress", (event) => {
     if (event.key == "w" || event.key == "W") {
+        if (ll.direction[0] == 1) {
+            ll.reverse();
+        }
         ll.direction = [-1, 0];
     } else if (event.key == "a" || event.key == "A") {
+        if (ll.direction[1] == 1) {
+            ll.reverse();
+        }
+
         ll.direction = [0, -1];
     } else if (event.key == "d" || event.key == "D") {
+        if (ll.direction[1] == -1) {
+            ll.reverse();
+        }
         ll.direction = [0, 1];
     } else if (event.key == "s" || event.key == "S") {
+        if (ll.direction[0] == -1) {
+            ll.reverse();
+        }
         ll.direction = [1, 0];
     }
 });
