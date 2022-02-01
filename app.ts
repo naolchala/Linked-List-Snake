@@ -137,6 +137,17 @@ class LinkedList {
         ]);
         temp.next = newNode;
     }
+    reverse() {
+        let temp = this.head;
+        let next, prev;
+
+        while (temp) {
+            prev = temp;
+            next = temp.next;
+            temp.next = prev;
+            temp = next;
+        }
+    }
 }
 
 const ll = new LinkedList(new SnakeNode(random_position(), "darkgreen"));
@@ -181,7 +192,7 @@ const init = setInterval(() => {
             ll.push();
         }
     }
-}, 100);
+}, 50);
 
 window.addEventListener("keypress", (event) => {
     if (event.key == "w" || event.key == "W") {
