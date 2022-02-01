@@ -1,0 +1,14 @@
+{
+  "name": "Linked-List-Snake",
+  "author": "naolchala",
+  "version": "1.0.0",
+  "repository": "https://github.com/naolchala/Linked-List-Snake.git",
+  "license": "MIT",
+  "scripts": {
+    "dev": "parcel serve index.html",
+    "build": "parcel build index.html"
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.2.1"
+  }
+}
