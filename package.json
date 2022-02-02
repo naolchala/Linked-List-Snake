@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "parcel serve index.html",
+    "start": "parcel start dist/index.html",
     "build": "parcel build index.html"
   },
   "devDependencies": {
