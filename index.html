@@ -11,10 +11,53 @@
             href="https://fonts.googleapis.com/css2?family=Comforter&display=swap"
             rel="stylesheet"
         />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+            rel="stylesheet"
+        />
         <link rel="stylesheet" href="./style.scss" />
     </head>
     <body>
-        <main>
+        <main class="page intro">
+            <h1 class="main-header">Snake</h1>
+            <div class="menu">
+                <button id="start">Start</button>
+                <button id="setting">Setting</button>
+                <button id="leade">Leaderboards</button>
+                <button id="about">About</button>
+            </div>
+        </main>
+        <main class="page gameover">
+            <h2>Game over</h2>
+            <h1 class="end-score">0</h1>
+            <div class="menu">
+                <button class="btn" id="restart">Restart</button>
+                <button class="btn">Leaderboards</button>
+            </div>
+        </main>
+        <main class="page settings">
+            <h2>Settings</h2>
+            <div class="menu">
+                <h3>Level</h3>
+                <select id="speed">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <br />
+            <h3>controlls</h3>
+            <div class="controlls">
+                <div class="row1">
+                    <kbd>w</kbd>
+                </div>
+                <div class="row1"><kbd>a</kbd><kbd>s</kbd><kbd>d</kbd></div>
+            </div>
+            <button id="exit_setting" class="btn">Back</button>
+        </main>
+        <main class="main-game">
             <header>
                 <h1>Snake</h1>
                 <h1 class="score">0</h1>

@@ -15,6 +15,7 @@ const random_position = () => [randInt(0, 30), randInt(10, 20)];
 
 const game_display = $(".game");
 let started = false;
+let game_page = false;
 const snake_color = "#4caf50";
 const snake_head = "#2e7d32";
 
@@ -34,6 +35,7 @@ const score = {
     point: 0,
     updateUI: function () {
         $(".score").innerHTML = this.point;
+        $(".end-score").innerHTML = this.point;
     },
 };
 
@@ -164,8 +166,10 @@ const single_movement = () => {
         ll.head.position[1] >= 30
     ) {
         clearInterval(init);
+        gameover();
     } else if (check_intersection(ll.head.position, ll)) {
         clearInterval(init);
+        gameover();
     } else {
         ll.head.draw();
         let temp = ll.head.next;
@@ -217,8 +221,63 @@ window.addEventListener("keypress", (event) => {
         ll.direction = [1, 0];
     }
 
-    if (!started) {
+    if (!started && game_page) {
         started = true;
         init = setInterval(single_movement, speed);
     }
 });
+
+const start_btn = $("#start");
+const restart_btn = $("#restart");
+const settings_btn = $("#setting");
+const speed_selecor = $("#speed") as HTMLSelectElement;
+const intro = $(".intro") as HTMLDivElement;
+const game_over_page = $(".gameover") as HTMLDivElement;
+const settings_page = $(".settings") as HTMLDivElement;
+
+start_btn.addEventListener("click", function () {
+    intro.style.opacity = "0";
+    intro.style.transform = "scale(5)";
+
+    setTimeout(() => {
+        intro.style.display = "none";
+        game_page = true;
+    }, 300);
+});
+
+const gameover = () => {
+    game_page = false;
+    game_over_page.style.display = "flex";
+    setTimeout(() => {
+        game_over_page.style.opacity = "1";
+        game_over_page.style.transform = "scale(1)";
+    }, 100);
+};
+
+const settings = () => {
+    settings_page.style.display = "flex";
+    setTimeout(() => {
+        settings_page.style.opacity = "1";
+        settings_page.style.transform = "scale(1)";
+    }, 100);
+};
+
+const exit_settings = () => {
+    settings_page.style.opacity = "0";
+    settings_page.style.transform = "scale(5)";
+
+    setTimeout(() => {
+        settings_page.style.display = "none";
+        game_page = true;
+    }, 300);
+};
+settings_btn.addEventListener("click", settings);
+$("#exit_setting").addEventListener("click", exit_settings);
+
+speed_selecor.addEventListener("change", function (event) {
+    let val = event.target.value;
+    let factor = 6 - parseInt(val);
+    speed = 50 + 20 * factor;
+});
+
+const restart = () => {};

@@ -2,6 +2,7 @@
     font-family: "Comforter", cursive;
     box-sizing: border-box;
     margin: 0;
+    padding: 0;
 }
 
 body {
@@ -16,7 +17,145 @@ body {
     justify-content: center;
 }
 
+.btn {
+    outline: none;
+    padding: 15px;
+    margin: 10px 0;
+    background-color: transparent;
+    text-transform: uppercase;
+    border: 4px solid white;
+    border-radius: 2em;
+    color: white;
+    font-size: 1.3em;
+    font-weight: bold;
+    font-family: Montserrat;
+    transition: all 300ms;
+
+    &:hover {
+        background-color: white;
+        color: #263238;
+    }
+}
+
 main {
+    &.page {
+        transition: all 300ms ease-in-out;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: url("./assets/logo.png"), #141a1d;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        background-blend-mode: overlay;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &.intro {
+        .logo {
+            height: 100vh;
+            object-fit: cover;
+            z-index: 1;
+            position: fixed;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            opacity: 0.15;
+            z-index: -1;
+
+            animation: fadeinf 3500ms ease-in-out backwards infinite;
+        }
+        .main-header {
+            font-size: 6em;
+        }
+        .sub-title {
+            font-family: cursive;
+            text-transform: uppercase;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+
+            button {
+                padding: 15px;
+                margin: 10px 0;
+                background-color: transparent;
+                text-transform: uppercase;
+                border: 4px solid white;
+                border-radius: 2em;
+                color: white;
+                font-size: 1.3em;
+                font-weight: bold;
+                font-family: Montserrat;
+                transition: all 300ms;
+
+                &:hover {
+                    background-color: white;
+                    color: #263238;
+                }
+            }
+        }
+    }
+
+    &.gameover {
+        transform: scale(5);
+        opacity: 0;
+        display: none;
+        h2 {
+            font-size: 6em;
+            color: red;
+            text-shadow: 5px 0 5px white, -5px 0 5px white, 0 5px 5px white,
+                0 -5px 5px white;
+        }
+        h1 {
+            font-size: 10em;
+        }
+        .menu {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+    &.settings {
+        transform: scale(5);
+        opacity: 0;
+        display: none;
+        h2 {
+            font-size: 6em;
+            color: red;
+            text-shadow: 5px 0 5px white, -5px 0 5px white, 0 5px 5px white,
+                0 -5px 5px white;
+        }
+        h1 {
+            font-size: 10em;
+        }
+
+        .menu {
+            h3 {
+                font-size: 1.7em;
+            }
+            display: flex;
+            align-items: center;
+            margin: 40px 0;
+        }
+
+        #speed {
+            font-size: 1.7em;
+            margin-left: 50px;
+            padding: 8px 20px 8px 50px;
+            border-radius: 25px;
+            background: white;
+            border: none;
+            outline: none;
+        }
+    }
+
     header {
         display: flex;
         justify-content: space-between;
@@ -34,6 +173,40 @@ main {
                 height: 1.2em;
                 // border: 1px solid rgba(238, 238, 238, 0.089);
             }
+        }
+    }
+}
+
+@keyframes fadeinf {
+    from {
+        opacity: 0.05;
+    }
+    50% {
+        opacity: 0.2;
+    }
+    to {
+        opacity: 0.05;
+    }
+}
+
+.controlls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .row1 {
+        display: flex;
+        flex-direction: row;
+        margin: 3px;
+
+        kbd {
+            padding: 10px;
+            font-weight: bold;
+            background: #2196f3;
+            border-bottom: 4px solid #0a5da1;
+            border-radius: 3px;
+            font-family: Montserrat;
+            text-transform: uppercase;
+            margin-right: 3px;
         }
     }
 }

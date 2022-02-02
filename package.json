@@ -5,9 +5,9 @@
   "repository": "https://github.com/naolchala/Linked-List-Snake.git",
   "license": "MIT",
   "scripts": {
-    "dev": "parcel serve index.html",
-    "start": "parcel start dist/index.html",
-    "build": "parcel build index.html"
+    "dev": "parcel  index.html",
+    "start": "parcel serve dist/index.html --public-url ./",
+    "build": "parcel build index.html --public-url ./"
   },
   "devDependencies": {
     "@parcel/transformer-sass": "^2.2.1",
