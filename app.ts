@@ -3,7 +3,6 @@ const $$ = (selector: string) => [...document.querySelectorAll(selector)];
 
 const get_random_dirn = () => {
     const x = Math.random() > 0.5 ? 1 : -1;
-    const y = Math.random() > 0.5 ? 1 : -1;
     return [0, x];
 };
 
@@ -14,30 +13,16 @@ const randInt = (min: number, max: number) => {
 const random_position = () => [randInt(0, 30), randInt(10, 20)];
 
 const game_display = $(".game");
-let started = false;
-let game_page = false;
+const start_btn = $("#start");
+const restart_btn = $("#restart") as HTMLButtonElement;
+const settings_btn = $("#setting");
+const speed_selecor = $("#speed") as HTMLSelectElement;
+const intro = $(".intro") as HTMLDivElement;
+const game_over_page = $(".gameover") as HTMLDivElement;
+const settings_page = $(".settings") as HTMLDivElement;
+
 const snake_color = "#4caf50";
 const snake_head = "#2e7d32";
-
-for (let i = 0; i < 30; i++) {
-    let row = document.createElement("div");
-    row.className = "game-row";
-    for (let j = 0; j < 30; j++) {
-        let col = document.createElement("div");
-        col.className = "game-col";
-        row.appendChild(col);
-    }
-    game_display.appendChild(row);
-}
-
-const game_rows = $$(".game-row");
-const score = {
-    point: 0,
-    updateUI: function () {
-        $(".score").innerHTML = this.point;
-        $(".end-score").innerHTML = this.point;
-    },
-};
 
 class SnakeNode {
     position: number[];
@@ -52,6 +37,7 @@ class SnakeNode {
     }
 
     draw() {
+        const game_rows = $$(".game-row");
         const current = game_rows[this.position[0]];
         const current_col = current.children[
             this.position[1]
@@ -65,6 +51,7 @@ class SnakeNode {
     }
 
     clear() {
+        const game_rows = $$(".game-row");
         const current = game_rows[this.position[0]];
         const current_col = current.children[
             this.position[1]
@@ -96,8 +83,8 @@ class LinkedList {
         }
 
         let newNode = new SnakeNode([
-            temp.position[0] - ll.direction[0],
-            temp.position[1] - ll.direction[1],
+            temp.position[0] - this.direction[0],
+            temp.position[1] - this.direction[1],
         ]);
         temp.next = newNode;
     }
@@ -143,141 +130,182 @@ const check_intersection = (position: number[], ll: LinkedList): boolean => {
     return false;
 };
 
-const ll = new LinkedList(new SnakeNode(random_position(), snake_head));
-ll.draw();
+class Snakegame {
+    started: boolean;
+    game_page: boolean;
+    score: number;
+    speed: number;
+    linkedList: LinkedList;
+    foodNode: SnakeNode;
+    interval: any;
+    that: Snakegame;
+    constructor() {
+        this.init();
+        this.that = this;
+    }
 
-const food = new SnakeNode(random_position(), "yellow", true);
-food.draw();
-let init: NodeJS.Timeout;
-let speed = 50;
-
-const single_movement = () => {
-    ll.head.clear();
-    let oldPos = ll.head.position;
-    ll.head.position = [
-        ll.head.position[0] + ll.direction[0],
-        ll.head.position[1] + ll.direction[1],
-    ];
-
-    if (
-        ll.head.position[0] < 0 ||
-        ll.head.position[0] >= 30 ||
-        ll.head.position[1] < 0 ||
-        ll.head.position[1] >= 30
-    ) {
-        clearInterval(init);
-        gameover();
-    } else if (check_intersection(ll.head.position, ll)) {
-        clearInterval(init);
-        gameover();
-    } else {
-        ll.head.draw();
-        let temp = ll.head.next;
-        while (temp) {
-            temp.clear();
-            let old = temp.position;
-            temp.position = oldPos;
-            oldPos = old;
-            temp.draw();
-            temp = temp.next;
+    make_enviroment() {
+        game_display.innerHTML = "";
+        for (let i = 0; i < 30; i++) {
+            let row = document.createElement("div");
+            row.className = "game-row";
+            for (let j = 0; j < 30; j++) {
+                let col = document.createElement("div");
+                col.className = "game-col";
+                row.appendChild(col);
+            }
+            game_display.appendChild(row);
         }
+    }
+
+    init() {
+        this.make_enviroment();
+        this.linkedList = new LinkedList(
+            new SnakeNode(random_position(), snake_head)
+        );
+        this.foodNode = new SnakeNode(random_position(), "yellow", true);
+        this.linkedList.draw();
+        this.foodNode.draw();
+        this.started = false;
+        this.score = 0;
+        this.speed = 60;
+        this.intitailize_controlls();
+        const that = this;
+
+        speed_selecor.addEventListener("change", function (event) {
+            const ev: any = event;
+            let val = ev.target.value;
+            let factor = 6 - parseInt(val);
+            that.speed = 50 + 20 * factor;
+        });
+    }
+
+    intitailize_controlls() {
+        window.addEventListener("keypress", (event) => {
+            if (event.key == "w" || event.key == "W") {
+                if (this.linkedList.direction[0] == 1) {
+                    this.linkedList.reverse();
+                }
+                this.linkedList.direction = [-1, 0];
+            } else if (event.key == "a" || event.key == "A") {
+                if (this.linkedList.direction[1] == 1) {
+                    this.linkedList.reverse();
+                }
+
+                this.linkedList.direction = [0, -1];
+            } else if (event.key == "d" || event.key == "D") {
+                if (this.linkedList.direction[1] == -1) {
+                    this.linkedList.reverse();
+                }
+                this.linkedList.direction = [0, 1];
+            } else if (event.key == "s" || event.key == "S") {
+                if (this.linkedList.direction[0] == -1) {
+                    this.linkedList.reverse();
+                }
+                this.linkedList.direction = [1, 0];
+            }
+
+            if (!this.started && this.game_page) {
+                this.started = true;
+                this.start();
+            }
+        });
+    }
+
+    start() {
+        this.interval = setInterval(
+            this.single_movement.bind(this),
+            this.speed
+        );
+    }
+
+    single_movement() {
+        this.linkedList.head.clear();
+        let oldPos = this.linkedList.head.position;
+        this.linkedList.head.position = [
+            this.linkedList.head.position[0] + this.linkedList.direction[0],
+            this.linkedList.head.position[1] + this.linkedList.direction[1],
+        ];
 
         if (
-            ll.head.position[0] == food.position[0] &&
-            ll.head.position[1] == food.position[1]
+            this.linkedList.head.position[0] < 0 ||
+            this.linkedList.head.position[0] >= 30 ||
+            this.linkedList.head.position[1] < 0 ||
+            this.linkedList.head.position[1] >= 30 ||
+            check_intersection(this.linkedList.head.position, this.linkedList)
         ) {
-            do {
-                food.position = random_position();
-            } while (check_intersection(food.position, ll));
-            food.draw();
-            ll.push();
-            score.point++;
-            score.updateUI();
+            clearInterval(this.interval);
+            gameover();
+        } else {
+            this.linkedList.head.draw();
+            let temp = this.linkedList.head.next;
+            while (temp) {
+                temp.clear();
+                let old = temp.position;
+                temp.position = oldPos;
+                oldPos = old;
+                temp.draw();
+                temp = temp.next;
+            }
+
+            if (
+                this.linkedList.head.position[0] == this.foodNode.position[0] &&
+                this.linkedList.head.position[1] == this.foodNode.position[1]
+            ) {
+                do {
+                    this.foodNode.position = random_position();
+                } while (
+                    check_intersection(this.foodNode.position, this.linkedList)
+                );
+                this.foodNode.draw();
+                this.linkedList.push();
+                this.score++;
+                this.updateScoreUI();
+            }
         }
     }
-};
-
-window.addEventListener("keypress", (event) => {
-    if (event.key == "w" || event.key == "W") {
-        if (ll.direction[0] == 1) {
-            ll.reverse();
-        }
-        ll.direction = [-1, 0];
-    } else if (event.key == "a" || event.key == "A") {
-        if (ll.direction[1] == 1) {
-            ll.reverse();
-        }
-
-        ll.direction = [0, -1];
-    } else if (event.key == "d" || event.key == "D") {
-        if (ll.direction[1] == -1) {
-            ll.reverse();
-        }
-        ll.direction = [0, 1];
-    } else if (event.key == "s" || event.key == "S") {
-        if (ll.direction[0] == -1) {
-            ll.reverse();
-        }
-        ll.direction = [1, 0];
+    updateScoreUI() {
+        $(".end-score").innerHTML = this.score.toString();
+        $(".score").innerHTML = this.score.toString();
     }
 
-    if (!started && game_page) {
-        started = true;
-        init = setInterval(single_movement, speed);
+    restart() {
+        exitPage(game_over_page);
+        this.game_page = true;
+        this.init();
     }
-});
+}
 
-const start_btn = $("#start");
-const restart_btn = $("#restart");
-const settings_btn = $("#setting");
-const speed_selecor = $("#speed") as HTMLSelectElement;
-const intro = $(".intro") as HTMLDivElement;
-const game_over_page = $(".gameover") as HTMLDivElement;
-const settings_page = $(".settings") as HTMLDivElement;
+function gotoPage(page: HTMLDivElement) {
+    page.style.display = "flex";
+    setTimeout(() => {
+        page.style.opacity = "1";
+        page.style.transform = "scale(1)";
+    }, 100);
+}
 
-start_btn.addEventListener("click", function () {
-    intro.style.opacity = "0";
-    intro.style.transform = "scale(5)";
+function exitPage(page: HTMLDivElement) {
+    page.style.opacity = "0";
+    page.style.transform = "scale(5)";
 
     setTimeout(() => {
-        intro.style.display = "none";
-        game_page = true;
+        page.style.display = "none";
     }, 300);
+}
+
+let GAME = new Snakegame();
+
+start_btn.addEventListener("click", function () {
+    exitPage(intro);
+    GAME.game_page = true;
 });
 
 const gameover = () => {
-    game_page = false;
-    game_over_page.style.display = "flex";
-    setTimeout(() => {
-        game_over_page.style.opacity = "1";
-        game_over_page.style.transform = "scale(1)";
-    }, 100);
+    GAME.game_page = false;
+    gotoPage(game_over_page);
 };
 
-const settings = () => {
-    settings_page.style.display = "flex";
-    setTimeout(() => {
-        settings_page.style.opacity = "1";
-        settings_page.style.transform = "scale(1)";
-    }, 100);
-};
+settings_btn.addEventListener("click", () => gotoPage(settings_page));
+$("#exit_setting").addEventListener("click", () => exitPage(settings_page));
 
-const exit_settings = () => {
-    settings_page.style.opacity = "0";
-    settings_page.style.transform = "scale(5)";
-
-    setTimeout(() => {
-        settings_page.style.display = "none";
-        game_page = true;
-    }, 300);
-};
-settings_btn.addEventListener("click", settings);
-$("#exit_setting").addEventListener("click", exit_settings);
-
-speed_selecor.addEventListener("change", function (event) {
-    let val = event.target.value;
-    let factor = 6 - parseInt(val);
-    speed = 50 + 20 * factor;
-});
-
-const restart = () => {};
+restart_btn.addEventListener("click", GAME.restart.bind(GAME));

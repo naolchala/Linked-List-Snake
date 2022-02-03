@@ -176,6 +176,9 @@ main {
         }
     }
 }
+.score {
+    transition: all 200ms ease;
+}
 
 @keyframes fadeinf {
     from {
